@@ -1,5 +1,5 @@
 .svn
-build/.svn
+build/
 img/.svn
 src/.svn
 tests/.svn

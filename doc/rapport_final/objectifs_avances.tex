@@ -1,0 +1,26 @@
+\section{Objectifs avancés}
+
+\subsection{Les ordonnancements}
+
+\subsubsection{FIFO et FILO}
+Il était proposé dans le sujet de tester différents types d'ordonnancement et de faire en sorte que le choix soit possible au moment de la compilation. Nous avons donc opté pour deux types d'ordonnancements l'un en FIFO l'autre en FILO. Pour ce faire, nous avons joué sur les fonctions \texttt{thread\_exit} et \texttt{thread\_create}. Au moment de la création et de la sortie d'un thread, soit on décide de le mettre en fin de liste dans le cadre d'une FIFO, soit de le mettre en début de liste dans le cadre d'une FILO. Nous avons aussi pensé à faire en sorte que la fonction \texttt{thread\_yield} soit modulable cependant nous nous sommes aperçus que si l'on remettait un thread en début de liste après avoir passé la main ceci pouvait poser problème dans le cadre d'un \texttt{thread\_join}. En effet le thread qui passe la main serait en attente alors que notre liste ne contient que des threads pr\^ets à l'exécution. Nous avons donc préféré laisser la fonction \texttt{thread\_yield} identique quelque soit l'ordonnancement choisi.
+
+
+\subsubsection{Fibonacci}
+
+Nous avons ensuite changé notre politique d'ordonnancement des threads de manière à optimiser le calcul des nombres de la suite de Fibonacci. Dans le fichier de test fourni, pour calculer $fibo(n)$, on crée deux threads qui vont calculer $fibo(n-1)$ et $fibo(n-2)$, puis on fait un \texttt{thread\_join} sur chacun de ces threads.\\
+L'enjeu est de parcourir l'arbre binaire formé par tous les appels récursifs le plus efficacement possible. Pour ce faire, plusieurs modifications sont faites:
+\begin{itemize}
+\item \texttt{thread\_create}: lors de la création d'un thread, on insère le nouveau thread en tête de liste tout en restant sur le thread parent. Ainsi, à chaque fois, on crée les deux threads fils et on donne la main à l'un des deux (dans notre cas au fils droit), et ainsi de suite. Pour calculer $fibo(n)$, on a alors au maximum $n+1$ threads crées.
+\item \texttt{thread\_exit}: lorsqu'un thread termine, le thread qui l'attend est inséré en tête pour qu'on lui redonne la main et qu'on remonte dans l'arbre.
+\end{itemize}
+
+\subsection{Les mutex}
+
+Les mutex (ou verrous exclusifs) servent à contraindre l'accès concurrentiel à une ressource. Bien que nous ne gérons pas plusieurs fils d'exécution parallèles et ne sommes donc pas en présence de véritable concurrence, il a été choisi d'implémenter un système de mutex pour la simplicité de l'implémentation sans multiprocessing. L'interface de programmation est calquée sur les mutex de pthread.
+\\
+
+La structure \texttt{mutex\_s} ne contient qu'une liste de threads en attente ainsi qu'une valeur courante, utilisée comme booléen dans le cas des mutex mais pouvant servir à étendre l'implémentation aux sémaphores. Lorsqu'un thread est le premier à demander l'ouverture du mutex, il décrémente simplement sa valeur. Si le mutex est bloqué, le thread est mis en attente dans la liste du mutex. Un thread qui libère le mutex décrémente sa valeur et réveille un thread en attente.
+\\
+
+Les problématiques de liste de threads et du codage de leur état ayant déjà été confrontés dans la première partie du projet, l'ajout des fonctionnalités a été relativement simple. L'une des difficultés a cependant été de correctement tester le code. Finalement, un jeu de test a été fourni.

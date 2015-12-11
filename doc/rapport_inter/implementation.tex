@@ -1,0 +1,18 @@
+\section*{Choix d'implémentation}
+
+\`{A} l'initialisation de la bibliothèque, deux listes globales de thread sont créées. Elle contiennent les threads en attentes ainsi que les threads actifs respectivement. Le thread courant est toujours en tête de la liste active. Leur implémentation utilise les listes génériques \textit{BSD queue}.
+\\
+
+La structure \texttt{thread\_s} est utilisée pour représenter une entrée dans la liste. Elle contient le contexte du thread, une référence vers un thread en attente et une valeur de retour. L'adresse d'une instance sert d'identifiant, c'est pourquoi le type \texttt{thread\_t} est en réalité un pointeur vers une structure. L'état d'un thread est codé par la liste dans laquelle il se trouve et sa position dans la liste.
+\\
+
+Un appel à \texttt{thread\_yield} inverse simplement le thread courant et un autre dans la liste, puis change de contexte. Pour se mettre en attente, un thread place sa référence dans la structure du thread à attendre et se place dans la liste des threads en attente. Lorsqu'un thread s'arrête, il conserve sa valeur de retour et se rend inaccessible depuis la liste des threads actifs. Si un thread était en attente, il est réveillé et un appel à \texttt{thread\_yield} est effectué.
+\\
+
+Le thread principal est ajouté à la liste des threads actifs par défaut à au chargement de la bibliothèque pour pouvoir manipuler son contexte comme n'importe quel autre. Les codes d'initialisation et de destruction des variables globales sont placés dans des fonctions possédant les attributs \textit{constructor} et \textit{destructor} de \textit{gcc}. Pour assurer un appel systématique à la fonction \texttt{thread\_exit}, une fonction de couverture a été ajoutée.
+\\
+
+Cette implémentation permet de ne pas réveiller un thread encore en attente mais ne fait aucune garantit quant à la répartition du temps d'exécution. De plus, elle ne résout pas certain problèmes de libération mémoire. Il semble aussi nécessaire de revoir l'ordre dans lequel les threads sont échangés dans la liste active pour éviter une famine.
+
+%description des différentes structures de données et de leur utilisation pour les fonctions de thread.h
+%avantages/inconvénients

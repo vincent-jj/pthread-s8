@@ -1,0 +1,13 @@
+\section*{Avancement du projet}
+
+Le premier objectif de ce projet est l'implémentation d'une version mono-c\oe{}ur sans préemption. Entièrement implémentée, cette première version doit être capable d'exécuter les tests fournis.
+\\
+
+\`{A} l'heure actuelle, une implémentation a été proposée, cependant elle ne permet de valider qu'un seul test. En particulier, les fonctions \texttt{thread\_create} et \texttt{thread\_yield} ont donné des résultats satisfaisants sur des tests réduits. L'attente d'un thread n'a pas été remis en cause par les tests mais le changement de contexte entre plusieurs thread ne fonctionne pas.
+\\
+
+L'origine des problèmes n'a pas été identifiée, la manipulation de plusieurs contextes rendent l'étape de débuguage très délicate. Il est peut être nécessaire de revoir nos méthodes de validation avec, par exemple, un makefile plus évolué et l'ajout d'un certain nombre de tests unitaires.
+\\
+
+L'objectif pour les prochaines séances est en priorité de passer les tests avant de viser des fonctionnalités plus avancées.
+\\

@@ -1,0 +1,45 @@
+\documentclass[a4paper,11pts]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+%\usepackage[frenchb]{babel}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+
+\pagestyle{fancy}
+\cfoot{ENSEIRB-MATMECA}
+\rfoot{\thepage}
+
+\renewcommand*\thesection{\arabic{section}}
+
+\begin{document}
+
+\begin{center}
+
+\includegraphics[width=100px]{img/enseirb-matmeca}
+
+\Huge{IT202}\\
+\Huge{Rapport intermédiaire}
+\noindent\rule{10cm}{0.4pt}
+
+\normalsize{\today}
+
+\vspace{1cm}
+
+\Large{\'{E}quipe : Anas Hakkal, Vincent Jeanjean, Erwan Le Masson, Bakari Nouhou, Maxime Paillassa}\\
+\Large{Encadrant : Mathieu Faverge}
+
+\end{center}
+
+\clearpage
+
+\input{introduction}
+
+\input{avancement}
+
+\input{implementation}
+
+\input{conclusion}
+
+\end{document}

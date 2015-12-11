@@ -1,0 +1,19 @@
+\section{Premiers objectifs}
+
+L'objectif principal de ce projet est l'écriture d'une bibliothèque de threads en espace utilisateur en utilisant la bibliothèque système \texttt{ucontext} pour la création et le changement de contextes. L'interface de programmation étant compatible avec \texttt{pthread}, il est intéressant d'en comparer les politiques d'ordonnancement et les performances.
+\\
+
+\`{A} l'initialisation de la bibliothèque, une liste globales de threads est créée utilisant les listes cycliques \texttt{BSD queue} pour son double chaînage. Des instances globales du thread courant et du thread principal sont également gardées en mémoire, initialement identiques.
+\\
+
+La structure \texttt{thread\_s} est utilisée pour représenter une entrée dans la liste. Elle contient son état, son contexte tel que définit dans \texttt{ucontext}, une référence vers un éventuel thread en attente et une valeur de retour. L'adresse d'une instance sert d'identifiant, c'est pourquoi le type \texttt{thread\_t} est en réalité un pointeur vers une structure.
+\\
+
+Un appel à \texttt{thread\_yield} échange dans la liste le thread courant et un thread prêt, puis applique un changement de contextes. Pour attendre un fils, un thread place sa référence dans la structure du thread à attendre mais ne se réinsère pas dans la liste de threads prêts. Un thread dont l'exécution s'est terminée replace son père dans la liste et demeure en mémoire jusqu'à la lecture de sa valeur. Pour assurer un appel systématique à la fonction \texttt{thread\_exit}, une fonction de couverture a été ajoutée.
+\\
+
+De plus, un certain nombre de scénarios particuliers ont dû être gérés, notamment les d'erreurs relevées par \texttt{pthread} comme deux appels à \texttt{thread\_join} sur un même thread. Une attention particulière a été apportée à la gestion mémoire, il ne faut pas par exemple libérer la pile du thread principal, même dans le cas ou il n'est pas le dernier thread à s'exécuter.
+\\
+
+Pour manipuler la politique d'ordonnancement, il suffit de chosir d'insérer un thread en tête ou en queue de liste à sa création et à la fin d'une période d'attente. En effet, \texttt{thread\_yield} choisit toujours le thread en tête de liste comme contexte suivant. Une pseudo coopération est aussi possible en forçant systématiquement le changement de contexte lors d'une création de thread, voire d'un appel à une fonction de la bibliothèque comme \texttt{thread\_self}.
+\\
